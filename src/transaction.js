@@ -4,9 +4,9 @@ const {
   createPrivateKey,
   createPublicKey,
   createSignature,
-} = require('../primitives');
+} = require('./primitives');
 
-class Transaction {
+module.exports = class Transaction {
   constructor(inputs, outputPubKeys, outputAmounts) {
     this.inputs = inputs;
     this.outputs = outputPubKeys.map((pub, i) => {
@@ -32,30 +32,8 @@ class Transaction {
   sign(privateKey) {
     return createSignature(this.hash(), privateKey);
   }
-}
-
-module.exports = {
-  Transaction,
-
-  createPrivateKey,
-  createPublicKey,
-  genesis() {
-    return {utxos: {}};
-  },
-  transition(state, blockdata) {
-    blockdata.transactions.forEach(tx => {
-      tx.inputs.forEach(input => {
-        delete state.utxos[input];
-      });
-      const txId = tx.hash();
-      tx.outputs.forEach((output, i) => {
-        const newUtxoId = tx.outputAt(i);
-        state.utxos[newUtxoId] = output;
-      });
-    });
-    return state;
-  },
-  isValidTransaction(state, tx, sigs) {
+  verify(state, sigs) {
+    const tx = this;
     let sumInputs = 0;
     let sumOutputs = 0;
     for (let i = 0; i < tx.outputs.length; i++) {
@@ -71,5 +49,5 @@ module.exports = {
       sumInputs += utxo.amount;
     }
     return sumInputs >= sumOutputs;
-  },
-};
+  }
+}

@@ -1,1 +1,3 @@
-# blockchain-demos
+# Basic Blockchain
+
+Simple Bitcoin clone.

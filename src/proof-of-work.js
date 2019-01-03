@@ -1,4 +1,4 @@
-const {sha256} = require('../primitives');
+const {sha256} = require('./primitives');
 
 function blockHash({parent, merkleRoot, nonce}) {
   return sha256(`${parent}|${merkleRoot}|${nonce}`);

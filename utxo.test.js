@@ -1,11 +1,14 @@
+const Transaction = require('./src/transaction');
+
 const {
-  Transaction,
-  createPrivateKey,
-  createPublicKey,
   transition,
   genesis,
-  isValidTransaction,
-} = require('./src/state-models/basic-utxo');
+} = require('./src/state-manager');
+
+const {
+  createPrivateKey,
+  createPublicKey,
+} = require('./src/primitives');
 
 const privateAlice = createPrivateKey();
 const privateBob = createPrivateKey();
@@ -33,5 +36,5 @@ const tx1 = new Transaction([utxo1], [pubBob], [10]);
 const tx1Sigs = [tx1.sign(privateAlice)];
 
 // Assert that the transaction is valid (i.e. inputs >= inputs and sig is valid)
-const isValid = isValidTransaction(state, tx1, tx1Sigs);
+const isValid = tx1.verify(state, tx1Sigs);
 console.log({isValid});
