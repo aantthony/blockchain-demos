@@ -5,7 +5,7 @@ const {
   transition,
   genesis,
   isValidTransaction,
-} = require('./blockchain-models/basic-utxo');
+} = require('./src/state-models/basic-utxo');
 
 const privateAlice = createPrivateKey();
 const privateBob = createPrivateKey();
@@ -24,7 +24,7 @@ state = transition(state, {
 });
 
 // Reference to first output on coinbaseTx (we are going to spend it):
-const utxo1 = coinbaseTx.hash() + '_0';
+const utxo1 = coinbaseTx.outputAt(0);
 
 // Create a new (unsigned) transaction to spend it:
 const tx1 = new Transaction([utxo1], [pubBob], [10]);

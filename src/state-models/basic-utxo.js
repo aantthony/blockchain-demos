@@ -4,27 +4,30 @@ const {
   createPrivateKey,
   createPublicKey,
   createSignature,
-} = require('./util/primitives');
+} = require('../primitives');
 
 class Transaction {
   constructor(inputs, outputPubKeys, outputAmounts) {
     this.inputs = inputs;
     this.outputs = outputPubKeys.map((pub, i) => {
-      return {
-        pub: pub,
-        amount: outputAmounts[i],
-      };
+      return { pub: pub, amount: outputAmounts[i] };
     });
   }
-  hash() {
-    return sha256(
+  serialize() {
+    return new Buffer(
       [
         this.inputs.join(','),
         this.outputs.map(s => {
           return `${s.pub}+${s.amount}`;
         }).join(','),
       ].join(':')
-    );
+    )
+  }
+  hash() {
+    return sha256(this.serialize());
+  }
+  outputAt(index) {
+    return `${this.hash().toString('hex')}_${index}`;
   }
   sign(privateKey) {
     return createSignature(this.hash(), privateKey);
@@ -33,6 +36,7 @@ class Transaction {
 
 module.exports = {
   Transaction,
+
   createPrivateKey,
   createPublicKey,
   genesis() {
@@ -45,7 +49,7 @@ module.exports = {
       });
       const txId = tx.hash();
       tx.outputs.forEach((output, i) => {
-        const newUtxoId = `${txId}_${i}`;
+        const newUtxoId = tx.outputAt(i);
         state.utxos[newUtxoId] = output;
       });
     });
