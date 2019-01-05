@@ -8,6 +8,11 @@
   "author": "Anthony Foster",
   "private": true,
   "dependencies": {
+    "@aantthony/logger": "^1.1.1",
+    "byline": "^5.0.0",
+    "default-gateway": "^3.0.1",
+    "nat-pmp": "^1.0.0",
+    "nat-upnp": "^1.1.1",
     "secp256k1": "^3.6.1"
   }
 }

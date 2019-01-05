@@ -1,9 +1,6 @@
 const Transaction = require('./src/transaction');
 
-const {
-  transition,
-  genesis,
-} = require('./src/state-manager');
+const transition = require('./src/transition');
 
 const {
   createPrivateKey,
@@ -16,7 +13,7 @@ const privateBob = createPrivateKey();
 const pubAlice = createPublicKey(privateAlice);
 const pubBob = createPublicKey(privateBob);
 
-let state = genesis();
+let state = null;
 
 // Create money out of nothing.
 // (The first transaction in a block is allowed to create $50).
