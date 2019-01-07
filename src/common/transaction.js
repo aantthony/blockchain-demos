@@ -18,10 +18,26 @@ module.exports = class Transaction {
       [
         this.inputs.join(','),
         this.outputs.map(s => {
-          return `${s.pub}+${s.amount}`;
+          return `${s.pub.toString('hex')}+${s.amount.toString()}`;
         }).join(','),
       ].join(':')
     )
+  }
+  static from(json) {
+    return new Transaction(
+      json.inputs.map(String),
+      json.outputs.map(o => Buffer.from(o.pub, 'hex')),
+      json.outputs.map(o => parseInt(o.amount)),
+    );
+  }
+  toJSON(sigs) {
+    return {
+      inputs: this.inputs.map(input => input),
+      outputs: this.outputs.map(output => {
+        return {pub: output.pub.toString('hex'), amount: output.amount.toFixed(0)};
+      }),
+      sigs: sigs && sigs.map(s => s.toString('base64')),
+    };
   }
   hash() {
     return sha256(this.serialize());

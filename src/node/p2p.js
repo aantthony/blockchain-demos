@@ -2,9 +2,10 @@ const net = require('net');
 const url = require('url');
 const byline = require('byline');
 const configureNAT = require('./nat');
+const logger = require('@aantthony/logger')('p2p');
 
 function log(message) {
-  console.log(message);
+  logger.info(message);
 }
 
 function sendMessage(msg, sockets) {
@@ -56,7 +57,7 @@ module.exports = function createPeer({nodelist, listenPort}) {
 
   const controlMethods = {
     get_peers(message, sender) {
-      sendMessage({name: 'peers', peers: peers.filter(p => p.public).map(p => ({id: p.id, name: peerName(p)}))}, sender);
+      sendMessage({control: 'peers', peers: peers.filter(p => p.public).map(p => ({id: p.id, name: peerName(p)}))}, sender);
     },
     register(message, sender) {
       if (message.id === peerId) {
@@ -151,9 +152,12 @@ module.exports = function createPeer({nodelist, listenPort}) {
     server.listen(listenPort, () => {
       configureNAT(listenPort)
       .then(info => {
-        const name = `node://${info.ip}:${port}/`;
+        const name = `node://${info.ip}:${listenPort}/`;
         log(`New Node is UP! ${name}`);
         sendMessage({control: 'register', id: peerId, public: true}, peers);
+      })
+      .then(null, (err) => {
+        log(`Failed to setup NAT: ${err.message}`);
       });
     });
   }

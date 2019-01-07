@@ -1,11 +1,11 @@
-const Transaction = require('./src/transaction');
+const Transaction = require('./src/common/transaction');
 
-const transition = require('./src/transition');
+const transition = require('./src/node/transition');
 
 const {
   createPrivateKey,
   createPublicKey,
-} = require('./src/primitives');
+} = require('./src/common/primitives');
 
 const privateAlice = createPrivateKey();
 const privateBob = createPrivateKey();
@@ -20,7 +20,7 @@ let state = null;
 const coinbaseTx = new Transaction([], [pubAlice], [50]);
 
 state = transition(state, {
-  transactions: [coinbaseTx],
+  transactions: [coinbaseTx.toJSON()],
 });
 
 // Reference to first output on coinbaseTx (we are going to spend it):
@@ -34,4 +34,5 @@ const tx1Sigs = [tx1.sign(privateAlice)];
 
 // Assert that the transaction is valid (i.e. inputs >= inputs and sig is valid)
 const isValid = tx1.verify(state, tx1Sigs);
+
 console.log({isValid});
