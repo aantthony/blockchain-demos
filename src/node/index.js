@@ -35,7 +35,7 @@ function createBlockchain() {
     if (parent.height !== header.height - 1) throw new Error(`Height claim: [height=${header.height}] is invalid.`);
     const hash = consensus.hash(header);
     if (!consensus.validateBlockHash(parent, header)) throw new Error(`Nonce is invalid.`);
-    if (!consensus.validateBlockData(header, data), utxo => ) throw new Error(`Data is invalid.`);
+    if (!consensus.validateBlockData(header, data), utxo => null) throw new Error(`Data is invalid.`);
 
     blocks.add(hash, header);
 
